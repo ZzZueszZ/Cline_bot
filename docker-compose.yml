@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+    environment:
+      - APP_NAME=myapp
+      - APP_ENV=development
+      - APP_DEBUG=true
+      - DATABASE_URL=mysql://cakephp:cakephp@db/cakephp
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cakephp
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cakephp
+      MYSQL_USER: cakephp
+      MYSQL_PASSWORD: cakephp
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - cakephp
+
+networks:
+  cakephp:
+    driver: bridge
+
+volumes:
+  db_data:
