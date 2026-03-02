@@ -13,6 +13,10 @@ services:
       - APP_ENV=development
       - APP_DEBUG=true
       - DATABASE_URL=mysql://cakephp:cakephp@db/cakephp
+    command: >
+      bash -c "chmod -R 777 /var/www/html/tmp /var/www/html/logs
+      && chown -R www-data:www-data /var/www/html/tmp /var/www/html/logs
+      && apache2-foreground"
     depends_on:
       db:
         condition: service_healthy

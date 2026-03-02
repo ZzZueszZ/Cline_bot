@@ -63,6 +63,18 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/pages/*', 'Pages::display');
 
         /*
+         * RESTful resource routes for Cameras CRUD.
+         * Explicit GET /{id}/edit route must come first so the fallback
+         * /{controller}/{action}/* doesn't swallow the numeric segment.
+         */
+        $builder->connect(
+            '/cameras/{id}/edit',
+            ['controller' => 'Cameras', 'action' => 'edit'],
+            ['id' => '\d+', 'pass' => ['id'], '_name' => 'cameras:edit-form']
+        );
+        $builder->resources('Cameras');
+
+        /*
          * Connect catchall routes for all controllers.
          *
          * The `fallbacks` method is a shortcut for
