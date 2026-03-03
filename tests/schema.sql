@@ -14,9 +14,12 @@ CREATE TABLE cameras (
 );
 
 CREATE TABLE users (
-    id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    username   VARCHAR(100) NOT NULL,
-    password   VARCHAR(255) NOT NULL,
-    created    DATETIME     NOT NULL,
-    modified   DATETIME     NOT NULL
+    id                   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    username             VARCHAR(100) NOT NULL,
+    password             VARCHAR(255) NOT NULL,
+    email                VARCHAR(255) NULL,
+    password_reset_token VARCHAR(255) NULL,
+    token_expires        DATETIME     NULL,
+    created              DATETIME     NOT NULL,
+    modified             DATETIME     NOT NULL
 );

@@ -62,6 +62,13 @@ return function (RouteBuilder $routes): void {
          */
         $builder->connect('/login', ['controller' => 'Users', 'action' => 'login']);
         $builder->connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
+        $builder->connect('/register', ['controller' => 'Users', 'action' => 'register']);
+        $builder->connect('/forgot-password', ['controller' => 'Users', 'action' => 'forgotPassword']);
+        $builder->connect(
+            '/reset-password/{token}',
+            ['controller' => 'Users', 'action' => 'resetPassword'],
+            ['pass' => ['token'], 'token' => '[a-f0-9]{64}']
+        );
 
         /*
          * ...and connect the rest of 'Pages' controller's URLs.
