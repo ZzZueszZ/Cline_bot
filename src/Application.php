@@ -16,6 +16,10 @@ declare(strict_types=1);
  */
 namespace App;
 
+use Authentication\AuthenticationService;
+use Authentication\AuthenticationServiceInterface;
+use Authentication\AuthenticationServiceProviderInterface;
+use Authentication\Middleware\AuthenticationMiddleware;
 use Cake\Core\Configure;
 use Cake\Core\ContainerInterface;
 use Cake\Datasource\FactoryLocator;
@@ -27,6 +31,7 @@ use Cake\Http\MiddlewareQueue;
 use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Application setup class.
@@ -36,7 +41,7 @@ use Cake\Routing\Middleware\RoutingMiddleware;
  *
  * @extends \Cake\Http\BaseApplication<\App\Application>
  */
-class Application extends BaseApplication
+class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     /**
      * Load all the application configuration and bootstrap logic.
@@ -92,6 +97,10 @@ class Application extends BaseApplication
             // See https://github.com/CakeDC/cakephp-cached-routing
             ->add(new RoutingMiddleware($this))
 
+            // Add Authentication middleware after routing so the request
+            // has been matched to a route before auth runs.
+            ->add(new AuthenticationMiddleware($this))
+
             // Parse various types of encoded request bodies so that they are
             // available as array through $request->getData()
             // https://book.cakephp.org/4/en/controllers/middleware.html#body-parser-middleware
@@ -115,6 +124,40 @@ class Application extends BaseApplication
      */
     public function services(ContainerInterface $container): void
     {
+    }
+
+    /**
+     * Returns the authentication service instance.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request The request.
+     * @return \Authentication\AuthenticationServiceInterface
+     */
+    public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
+    {
+        $service = new AuthenticationService();
+
+        $service->setConfig([
+            'unauthenticatedRedirect' => '/login',
+            'queryParam' => 'redirect',
+        ]);
+
+        $service->loadIdentifier('Authentication.Password', [
+            'fields' => [
+                'username' => 'username',
+                'password' => 'password',
+            ],
+        ]);
+
+        $service->loadAuthenticator('Authentication.Session');
+        $service->loadAuthenticator('Authentication.Form', [
+            'fields' => [
+                'username' => 'username',
+                'password' => 'password',
+            ],
+            'loginUrl' => '/login',
+        ]);
+
+        return $service;
     }
 
     /**

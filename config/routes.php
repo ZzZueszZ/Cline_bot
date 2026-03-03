@@ -58,6 +58,12 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
 
         /*
+         * Authentication routes.
+         */
+        $builder->connect('/login', ['controller' => 'Users', 'action' => 'login']);
+        $builder->connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
+
+        /*
          * ...and connect the rest of 'Pages' controller's URLs.
          */
         $builder->connect('/pages/*', 'Pages::display');

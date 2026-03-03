@@ -22,16 +22,19 @@ class CamerasControllerTest extends TestCase
      */
     protected array $fixtures = [
         'app.Cameras',
+        'app.Users',
     ];
 
     /**
-     * setUp — disable CSRF for all integration tests.
+     * setUp — enable tokens and simulate an authenticated session.
      */
     public function setUp(): void
     {
         parent::setUp();
         $this->enableCsrfToken();
         $this->enableSecurityToken();
+        // Simulate a logged-in user so Authentication middleware is satisfied.
+        $this->session(['Auth' => ['id' => 1, 'username' => 'admin']]);
     }
 
     /**
