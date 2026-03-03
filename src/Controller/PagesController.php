@@ -32,6 +32,18 @@ use Cake\View\Exception\MissingTemplateException;
 class PagesController extends AppController
 {
     /**
+     * Allow all Pages actions without authentication.
+     *
+     * @param \Cake\Event\EventInterface $event The event instance.
+     * @return \Cake\Http\Response|null|void
+     */
+    public function beforeFilter(\Cake\Event\EventInterface $event): void
+    {
+        parent::beforeFilter($event);
+        $this->Authentication->allowUnauthenticated(['display']);
+    }
+
+    /**
      * Displays a view
      *
      * @param string ...$path Path segments.

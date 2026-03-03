@@ -58,9 +58,34 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
 
         /*
+         * Authentication routes.
+         */
+        $builder->connect('/login', ['controller' => 'Users', 'action' => 'login']);
+        $builder->connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
+        $builder->connect('/register', ['controller' => 'Users', 'action' => 'register']);
+        $builder->connect('/forgot-password', ['controller' => 'Users', 'action' => 'forgotPassword']);
+        $builder->connect(
+            '/reset-password/{token}',
+            ['controller' => 'Users', 'action' => 'resetPassword'],
+            ['pass' => ['token'], 'token' => '[a-f0-9]{64}']
+        );
+
+        /*
          * ...and connect the rest of 'Pages' controller's URLs.
          */
         $builder->connect('/pages/*', 'Pages::display');
+
+        /*
+         * RESTful resource routes for Cameras CRUD.
+         * Explicit GET /{id}/edit route must come first so the fallback
+         * /{controller}/{action}/* doesn't swallow the numeric segment.
+         */
+        $builder->connect(
+            '/cameras/{id}/edit',
+            ['controller' => 'Cameras', 'action' => 'edit'],
+            ['id' => '\d+', 'pass' => ['id'], '_name' => 'cameras:edit-form']
+        );
+        $builder->resources('Cameras');
 
         /*
          * Connect catchall routes for all controllers.

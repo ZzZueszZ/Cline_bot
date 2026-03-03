@@ -1,14 +1,57 @@
-<!---
+## Task ID
+`TASK-XXX`
 
-**PLEASE NOTE:**
+## Summary
+<!-- What does this PR do? Link to implement_plan.md -->
 
-This is only a issue tracker for issues related to the CakePHP Application Skeleton.
-For CakePHP Framework issues please use this [issue tracker](https://github.com/cakephp/cakephp/issues).
+## Type of Change
+- [ ] ✨ Feature (new functionality)
+- [ ] 🐛 Bug fix
+- [ ] ♻️ Refactor (no functional change)
+- [ ] 🧪 Tests only
+- [ ] 📝 Documentation
+- [ ] 🔧 Configuration / DevOps
 
-Describe the big picture of your changes here to communicate to the maintainers why we should accept this pull request. If it fixes a bug or resolves a feature request, be sure to link to that issue.
+## Implementation Plan
+<!-- Link or path to the approved implement_plan.md -->
+`docs/tasks/{task-name}/implement_plan.md`
 
-The best way to propose a feature is to open an issue first and discuss your ideas there before implementing them.
+## Changes Made
 
-Always follow the [contribution guidelines](https://github.com/cakephp/cakephp/blob/master/.github/CONTRIBUTING.md) guidelines when submitting a pull request. In particular, make sure existing tests still pass, and add tests for all new behavior. When fixing a bug, you may want to add a test to verify the fix.
+### Files Created
+-
 
--->
+### Files Modified
+-
+
+### Database Migrations
+- [ ] No migrations
+- [ ] Migration included: `config/Migrations/YYYYMMDDHHIISS_Xxx.php`
+
+## Testing
+
+### Test Results
+- [ ] All existing tests pass (`make test`)
+- [ ] New tests written and passing
+- [ ] Code style check passes (`make cs`)
+
+### Manual Testing Steps
+<!-- Steps to manually verify the feature works -->
+1. Start containers: `make up`
+2. Navigate to `http://localhost:8765/...`
+3.
+
+## Checklist
+- [ ] Follows CakePHP 5 conventions
+- [ ] Uses strict types (`declare(strict_types=1)`)
+- [ ] No raw SQL (CakePHP ORM used throughout)
+- [ ] Validation at Model layer
+- [ ] Flash messages for user feedback
+- [ ] No regressions in existing tests
+- [ ] `implement_plan.md` Definition of Done is complete
+
+## Screenshots (if applicable)
+<!-- Add screenshots for UI changes -->
+
+## Notes for Reviewer
+<!-- Any context, concerns, or decisions the reviewer should know about -->

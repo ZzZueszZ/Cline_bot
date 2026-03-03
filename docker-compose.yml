@@ -13,6 +13,15 @@ services:
       - APP_ENV=development
       - APP_DEBUG=true
       - DATABASE_URL=mysql://cakephp:cakephp@db/cakephp
+    command: >
+      bash -c "mkdir -p /var/www/html/tmp/cache/models
+      /var/www/html/tmp/cache/persistent
+      /var/www/html/tmp/cache/views
+      /var/www/html/tmp/sessions
+      /var/www/html/tmp/tests
+      /var/www/html/logs
+      && chmod -R 777 /var/www/html/tmp /var/www/html/logs
+      && apache2-foreground"
     depends_on:
       db:
         condition: service_healthy

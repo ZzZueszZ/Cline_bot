@@ -130,6 +130,19 @@ return [
             'duration' => '+1 years',
             'url' => env('CACHE_CAKEMODEL_URL', null),
         ],
+
+        /*
+         * Configure the cache for translation files.
+         * Required by CakePHP 5.1.0+.
+         */
+        '_cake_translations_' => [
+            'className' => FileEngine::class,
+            'prefix' => 'myapp_cake_translations_',
+            'path' => CACHE . 'persistent' . DS,
+            'serialize' => true,
+            'duration' => '+1 years',
+            'url' => env('CACHE_CAKETRANSLATIONS_URL', null),
+        ],
     ],
 
     /*
@@ -174,7 +187,10 @@ return [
         'skipLog' => [],
         'log' => true,
         'trace' => true,
-        'ignoredDeprecationPaths' => [],
+        'ignoredDeprecationPaths' => [
+            'src/Application.php',
+            'vendor/cakephp/authentication/src/AuthenticationService.php',
+        ],
     ],
 
     /*
