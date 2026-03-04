@@ -88,6 +88,11 @@ return function (RouteBuilder $routes): void {
         $builder->resources('Cameras');
 
         /*
+         * Dashboard overview route.
+         */
+        $builder->connect('/dashboard', ['controller' => 'Dashboard', 'action' => 'index'], ['_name' => 'dashboard:index']);
+
+        /*
          * Connect catchall routes for all controllers.
          *
          * The `fallbacks` method is a shortcut for

@@ -37,6 +37,10 @@ class CamerasTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+
+        $this->belongsTo('Stores', [
+            'foreignKey' => 'store_id',
+        ]);
     }
 
     /**
