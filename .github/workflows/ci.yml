@@ -39,7 +39,7 @@ jobs:
           context: .
           push: true
           tags: zzzueszz/myapp:latest
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: zzzueszz
           password: ${{ secrets.DOCKER_PASSWORD }}
 
 
