@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\ORM\TableRegistry;
+
 /**
  * Dashboard Controller — central overview page.
  *
@@ -12,15 +14,24 @@ namespace App\Controller;
 class DashboardController extends AppController
 {
     /**
+     * Initialization hook method.
+     *
+     * @return void
+     */
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->Stores = TableRegistry::getTableLocator()->get('Stores');
+        $this->Cameras = TableRegistry::getTableLocator()->get('Cameras');
+    }
+
+    /**
      * Index method — overview dashboard with stats, camera search, map and about.
      *
      * @return void
      */
     public function index(): void
     {
-        $this->loadModel('Stores');
-        $this->loadModel('Cameras');
-
         // --- Stats ---
         $totalStores = $this->Stores->find()->count();
         $totalCameras = $this->Cameras->find()->count();

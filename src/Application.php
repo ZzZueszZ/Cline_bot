@@ -70,6 +70,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             $this->addPlugin('DebugKit');
         }
 
+        $this->addPlugin('Authentication');
         // Load more plugins here
     }
 
