@@ -16,28 +16,6 @@ Takes a raw task description as input and guides the developer through normalizi
 <detailed_sequence_steps>
 # Ship New Feature Process - Detailed Sequence of Steps
 
----
-
-## ⚠️ MANDATORY: Context Window Monitoring
-
-**You MUST monitor context window usage throughout this entire workflow.**
-
-At the start of every major step, check the `# Context Window Usage` value in environment details.
-
-| Usage | Action Required |
-|---|---|
-| < 50% | Continue normally |
-| ≥ 50% | Complete current logical step, then initiate a `new_task` handoff |
-
-**When context window ≥ 50%, you MUST:**
-1. Complete the current atomic step (do not stop mid-file or mid-thought).
-2. Use `ask_followup_question` to offer a handoff:
-   > "I've completed [specific accomplishment]. The context window is at [X]%. Would you like me to create a new task to continue with [remaining work]?"
-   > Options: `["Yes, create a new task", "No, continue in this session"]`
-3. If approved, use the `new_task` tool with the **Full Handoff Context Template** defined at the end of this workflow.
-
----
-
 ## Step 0: Plan Mode — Task Decomposition (if in PLAN MODE)
 
 If starting in Plan Mode, you **MUST** perform upfront decomposition before any implementation.
@@ -225,52 +203,6 @@ Execute the implementation plan **one atomic step at a time**, checking context 
      - Commit message and PR description.
 
 ---
-
-## 🔄 Full Handoff Context Template
-
-Use this template whenever initiating a `new_task` handoff during this workflow.
-
-```xml
-<new_task>
-<context>
-# Task Continuation: Ship New Feature — <Feature Name>
-
-## Workflow Status
-- Current step: <Step X: e.g., "Step 3 — Implementing code, 3 of 5 steps complete">
-- Reason for handoff: Context window reached [X]%
-
-## Normalized Prompt
-<Paste the full Normalized Prompt produced in Step 1>
-
-## Implementation Plan
-<Paste the full Detailed Implementation Plan produced in Step 2>
-
-## Completed Work
-- [List every file created or modified so far, with a brief description of each change]
-- [Include any important decisions made during implementation]
-- [Note any patterns or conventions adopted]
-
-## Current State
-- [Describe the current runnable/compilable state of the codebase]
-- [Note any tests passing or failing]
-- [Note any running processes or environment requirements]
-
-## Remaining Steps
-- [ ] <Next atomic implementation step>
-- [ ] <Subsequent step>
-- [ ] Step 4: Create Pull Request via pr-review-cline workflow
-
-## Reference Information
-- Architecture patterns in use: <e.g., "Repository pattern in src/repositories/">
-- Test conventions: <e.g., "Tests in __tests__/ using Jest">
-- Commit convention: Conventional Commits
-- Any user preferences noted: <e.g., "User prefers functional components over class components">
-
-## Next Action
-Please continue by [specific next atomic step — e.g., "implementing the login endpoint in src/routes/auth.ts following the pattern established in src/routes/register.ts"].
-</context>
-</new_task>
-```
 
 ### Handoff Best Practices
 

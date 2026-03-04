@@ -1,77 +1,49 @@
-name: CI
+name: CI/CD
 
 on:
   push:
-    branches:
-      - '4.x'
-      - '4.next'
-      - '5.x'
-  pull_request:
-    branches:
-      - '*'
-  workflow_dispatch:
-
-permissions:
-  contents: read
+    branches: [main, master]
 
 jobs:
-  testsuite:
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: ['8.1', '8.2']
-        dependencies: ['highest']
-        include:
-          - php-version: '8.1'
-            dependencies: 'lowest'
+  build-test-deploy:
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php-version }}
-        extensions: mbstring, intl, pdo_sqlite
-        ini-values: zend.assertions=1
-        coverage: none
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3' # Based on .clinerules/rules.md
+          extensions: intl, pdo_mysql, mbstring, zip
+          ini-values: memory_limit=-1
+          tools: composer:v2
 
-    - name: Composer install
-      uses: ramsey/composer-install@v2
-      with:
-        dependency-versions: ${{ matrix.dependencies }}
-        composer-options: ${{ matrix.composer-options }}
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
 
-    - name: Composer post install
-      run: composer run-script post-install-cmd --no-interaction
+      - name: Run PHP_CodeSniffer
+        run: composer run cs-check
 
-    - name: Run PHPUnit
-      run: vendor/bin/phpunit
-      env:
-        DATABASE_TEST_URL: sqlite://./testdb.sqlite
+      - name: Run PHPStan
+        run: composer run stan
 
-  coding-standard:
-    name: Coding Standard & Static Analysis
-    runs-on: ubuntu-22.04
+      - name: Run tests
+        run: composer run test
 
-    steps:
-    - uses: actions/checkout@v3
+      - name: Build and Push Docker Image
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: your-docker-repo/your-image-name:latest
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.1'
-        extensions: mbstring, intl
-        coverage: none
-        tools: cs2pr, phpstan:1.10
 
-    - name: Composer install
-      uses: ramsey/composer-install@v2
-
-    - name: Run PHP CodeSniffer
-      run: vendor/bin/phpcs --report=checkstyle | cs2pr
-
-    - name: Run phpstan
-      if: always()
-      run: phpstan
+          # Add other Cline CLI arguments as needed for your automation task
+          # For example:
+          # command: 'pr-review'
+          # args: '--pr-url ${{ github.event.pull_request.html_url }}'
