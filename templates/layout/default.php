@@ -60,8 +60,10 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                 </a>
             </div>
             <div class="hidden md:flex items-center gap-8">
+                <a href="<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'index']) ?>" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Dashboard</a>
+                <a href="<?= $this->Url->build(['controller' => 'Stores', 'action' => 'index']) ?>" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Shops</a>
+                <a href="<?= $this->Url->build(['controller' => 'Cameras', 'action' => 'index']) ?>" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Cameras</a>
                 <a target="_blank" rel="noopener" href="https://book.cakephp.org/5/" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Documentation</a>
-                <a target="_blank" rel="noopener" href="https://api.cakephp.org/" class="text-sm font-medium text-slate-400 hover:text-white transition-colors">API</a>
             </div>
             <div class="flex md:hidden">
                  <i data-lucide="menu" class="w-6 h-6 text-slate-400"></i>

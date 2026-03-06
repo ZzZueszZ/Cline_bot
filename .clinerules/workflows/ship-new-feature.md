@@ -31,9 +31,6 @@ If starting in Plan Mode, you **MUST** perform upfront decomposition before any 
        B --> C[Step 2: Implementation Plan]
        C --> D[Step 3: Implement Code]
        D --> E[Step 4: Create Pull Request]
-       D --> F{Context ≥ 50%?}
-       F -->|Yes| G[new_task Handoff]
-       G --> D
    ```
 
 5. Use `ask_followup_question` to confirm the plan and which subtask to begin with.
