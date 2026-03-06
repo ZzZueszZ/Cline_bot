@@ -41,6 +41,10 @@ class CamerasTable extends Table
         $this->belongsTo('Stores', [
             'foreignKey' => 'store_id',
         ]);
+
+        $this->belongsTo('Categories', [
+            'foreignKey' => 'category_id',
+        ]);
     }
 
     /**

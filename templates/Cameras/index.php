@@ -12,6 +12,8 @@
                 <tr>
                     <th><?= __('ID') ?></th>
                     <th><?= __('Name') ?></th>
+                    <th><?= __('Category') ?></th>
+                    <th><?= __('Store') ?></th>
                     <th><?= __('IP Address') ?></th>
                     <th><?= __('Location') ?></th>
                     <th><?= __('Status') ?></th>
@@ -23,6 +25,8 @@
                 <tr>
                     <td><?= $this->Number->format($camera->id) ?></td>
                     <td><?= h($camera->name) ?></td>
+                    <td><?= h($camera->category->name ?? __('None')) ?></td>
+                    <td><?= h($camera->store->name ?? __('None')) ?></td>
                     <td><?= h($camera->ip_address) ?></td>
                     <td><?= h($camera->location) ?></td>
                     <td><?= $camera->status ? __('Active') : __('Inactive') ?></td>

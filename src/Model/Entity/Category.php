@@ -6,21 +6,15 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Camera Entity
+ * Category Entity
  *
  * @property int $id
  * @property string $name
- * @property string $ip_address
- * @property string|null $location
- * @property bool $status
- * @property int|null $category_id
- * @property int|null $store_id
+ * @property string|null $description
  * @property \Cake\I18n\DateTime $created
  * @property \Cake\I18n\DateTime $modified
- * @property \App\Model\Entity\Category|null $category
- * @property \App\Model\Entity\Store|null $store
  */
-class Camera extends Entity
+class Category extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -29,9 +23,7 @@ class Camera extends Entity
      */
     protected array $_accessible = [
         'name' => true,
-        'ip_address' => true,
-        'location' => true,
-        'status' => true,
+        'description' => true,
         'created' => true,
         'modified' => true,
     ];

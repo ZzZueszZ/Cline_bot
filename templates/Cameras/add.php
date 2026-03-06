@@ -14,15 +14,17 @@
     <div class="column column-80">
         <div class="cameras form content">
             <?= $this->Form->create($camera) ?>
-            <fieldset>
-                <legend><?= __('Add Camera') ?></legend>
-                <?php
-                    echo $this->Form->control('name', ['label' => __('Name')]);
-                    echo $this->Form->control('ip_address', ['label' => __('IP Address')]);
-                    echo $this->Form->control('location', ['label' => __('Location'), 'required' => false]);
-                    echo $this->Form->control('status', ['label' => __('Status'), 'type' => 'checkbox']);
-                ?>
-            </fieldset>
+    <fieldset>
+        <legend><?= __('Add Camera') ?></legend>
+        <?php
+            echo $this->Form->control('name');
+            echo $this->Form->control('ip_address');
+            echo $this->Form->control('location');
+            echo $this->Form->control('status');
+            echo $this->Form->control('category_id', ['options' => $categories, 'empty' => __('Select Category'), 'label' => __('Category')]);
+            echo $this->Form->control('store_id', ['options' => $stores, 'empty' => __('Select Store'), 'label' => __('Store')]);
+        ?>
+    </fieldset>
             <?= $this->Form->button(__('Submit')) ?>
             <?= $this->Form->end() ?>
         </div>
