@@ -14,356 +14,401 @@
  */
 $this->assign('title', 'Dashboard');
 
-// Convert result sets to arrays once so we can reuse them freely.
 $storesArray  = $stores->toArray();
 $camerasArray = $cameras->toArray();
 ?>
 <?php $this->start('css') ?>
 <style>
-/* ── Dashboard Layout ──────────────────────────────── */
-.dashboard { padding: 2rem 0; }
-.dashboard-hero {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    color: #fff;
-    padding: 3rem 2rem;
-    border-radius: 12px;
-    margin-bottom: 2.5rem;
-    text-align: center;
-}
-.dashboard-hero h1 { font-size: 2.4rem; margin: 0 0 0.5rem; color: #fff; }
-.dashboard-hero p  { font-size: 1.1rem; opacity: 0.8; margin: 0; }
-
-/* ── Stat Cards ─────────────────────────────────────── */
-.stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.2rem;
-    margin-bottom: 2.5rem;
-}
-.stat-card {
-    border-radius: 10px;
-    padding: 1.4rem 1.6rem;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,.15);
-}
-.stat-card .stat-label { font-size: 0.85rem; opacity: 0.85; text-transform: uppercase; letter-spacing: .05em; }
-.stat-card .stat-value { font-size: 2.4rem; font-weight: 700; line-height: 1; }
-.stat-card .stat-icon  { font-size: 1.6rem; }
-.card-stores   { background: linear-gradient(135deg, #667eea, #764ba2); }
-.card-cameras  { background: linear-gradient(135deg, #11998e, #38ef7d); color: #1a3a2a; }
-.card-active   { background: linear-gradient(135deg, #f7971e, #ffd200); color: #3a2a00; }
-.card-inactive { background: linear-gradient(135deg, #cb2d3e, #ef473a); }
-
-/* ── Section headings ────────────────────────────────── */
-.section-heading {
-    font-size: 1.3rem;
-    font-weight: 700;
-    border-left: 4px solid #0f3460;
-    padding-left: 0.75rem;
-    margin: 2rem 0 1rem;
-    color: #1a1a2e;
-}
-
-/* ── Search / Filter bar ──────────────────────────────── */
-.filter-bar {
-    background: #f4f6fb;
-    border-radius: 10px;
-    padding: 1.2rem 1.4rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: flex-end;
-    margin-bottom: 1.4rem;
-}
-.filter-bar label { font-size: 0.8rem; font-weight: 600; color: #555; display: block; margin-bottom: 0.2rem; }
-.filter-bar input,
-.filter-bar select { margin-bottom: 0; }
-.filter-bar .filter-group { flex: 1 1 180px; }
-.filter-bar .filter-actions { display: flex; gap: 0.5rem; align-items: flex-end; }
-
-/* ── Status badge ──────────────────────────────────────── */
-.badge {
-    display: inline-block;
-    padding: .2em .65em;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: .02em;
-}
-.badge-active   { background: #d4edda; color: #155724; }
-.badge-inactive { background: #f8d7da; color: #721c24; }
-
-/* ── Store cards ───────────────────────────────────────── */
-.store-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.2rem;
-    margin-bottom: 2rem;
-}
-.store-card {
-    background: #fff;
-    border: 1px solid #e0e4ef;
-    border-radius: 10px;
-    padding: 1.2rem 1.4rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
-    transition: box-shadow .2s;
-}
-.store-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,.12); }
-.store-card h4 { margin: 0 0 0.3rem; color: #1a1a2e; font-size: 1rem; }
-.store-card .store-address { font-size: 0.82rem; color: #777; margin: 0 0 0.8rem; }
-.store-card .camera-chip {
-    display: inline-flex; align-items: center; gap: 0.3rem;
-    background: #eef2ff; color: #3949ab;
-    border-radius: 6px; padding: .25rem .6rem;
-    font-size: 0.82rem; font-weight: 600;
-}
-.store-card .camera-list-mini { list-style: none; padding: 0; margin: 0.6rem 0 0; }
-.store-card .camera-list-mini li {
-    font-size: 0.82rem; color: #444;
-    padding: 0.15rem 0;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex; justify-content: space-between;
-}
-.store-card .camera-list-mini li:last-child { border-bottom: none; }
-
-/* ── Camera table ──────────────────────────────────────── */
-.table-wrapper { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-thead th { background: #1a1a2e; color: #fff; padding: .65rem .9rem; text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: .04em; }
-tbody tr:nth-child(even) { background: #f8f9fc; }
-tbody td { padding: .6rem .9rem; border-bottom: 1px solid #eaeaea; vertical-align: middle; }
-tbody tr:hover { background: #eef2ff; }
-
-/* ── Map ──────────────────────────────────────────────── */
-#dashboard-map {
-    height: 420px;
-    border-radius: 10px;
-    border: 1px solid #dde;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 12px rgba(0,0,0,.1);
-}
-
-/* ── About ──────────────────────────────────────────────── */
-.about-card {
-    background: linear-gradient(135deg, #f4f6fb 0%, #e8ecf8 100%);
-    border-radius: 10px;
-    padding: 2rem 2.2rem;
-    margin-bottom: 2rem;
-    border: 1px solid #dde4f5;
-}
-.about-card h3 { color: #1a1a2e; margin-top: 0; }
-.about-card p  { color: #444; line-height: 1.7; }
-.about-card ul { color: #444; line-height: 1.9; padding-left: 1.4rem; }
-
-/* ── No data placeholder ──────────────────────────────── */
-.empty-state {
-    text-align: center; padding: 2.5rem; color: #999;
-    background: #fafafa; border-radius: 10px;
-    border: 2px dashed #e0e0e0;
-    margin-bottom: 1.5rem;
-}
+    .glass-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    .stat-card-glow {
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card-glow::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    #dashboard-map {
+        height: 450px;
+        border-radius: 1rem;
+        z-index: 1;
+    }
+    .leaflet-container {
+        background: #0f172a !important;
+    }
+    .badge-vibrant-active {
+        background: rgba(34, 197, 94, 0.2);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .badge-vibrant-inactive {
+        background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    /* Override Milligram defaults that might clash */
+    input, select, textarea {
+        background-color: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+    }
+    input:focus, select:focus {
+        border-color: #3b82f6 !important;
+        outline: none !important;
+    }
+    button.button, .button {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        text-transform: none !important;
+        height: auto !important;
+        padding: 0.75rem 1.5rem !important;
+        font-weight: 600 !important;
+    }
+    .button-outline {
+        background-color: transparent !important;
+        color: #3b82f6 !important;
+    }
 </style>
 <?php $this->end() ?>
 
-<div class="dashboard">
-
-    <!-- ── Hero ──────────────────────────────────────────── -->
-    <div class="dashboard-hero">
-        <h1>📡 Surveillance Dashboard</h1>
-        <p>Real-time overview of stores, cameras and system health</p>
-    </div>
-
-    <!-- ── Stat Cards ─────────────────────────────────────── -->
-    <div class="stat-grid">
-        <div class="stat-card card-stores">
-            <span class="stat-icon">🏪</span>
-            <span class="stat-value"><?= $totalStores ?></span>
-            <span class="stat-label">Total Stores</span>
-        </div>
-        <div class="stat-card card-cameras">
-            <span class="stat-icon">📷</span>
-            <span class="stat-value"><?= $totalCameras ?></span>
-            <span class="stat-label">Total Cameras</span>
-        </div>
-        <div class="stat-card card-active">
-            <span class="stat-icon">✅</span>
-            <span class="stat-value"><?= $activeCameras ?></span>
-            <span class="stat-label">Active Cameras</span>
-        </div>
-        <div class="stat-card card-inactive">
-            <span class="stat-icon">⚠️</span>
-            <span class="stat-value"><?= $inactiveCameras ?></span>
-            <span class="stat-label">Inactive Cameras</span>
+<div class="space-y-12">
+    <!-- ── Hero Section ── -->
+    <div class="relative rounded-2xl overflow-hidden p-8 md:p-12 mb-8">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 z-0"></div>
+        <div class="absolute inset-0 backdrop-blur-3xl z-0"></div>
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="text-center md:text-left">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
+                    System <span class="text-blue-500">Overview</span>
+                </h1>
+                <p class="text-slate-400 text-lg max-w-xl">
+                    Real-time monitoring and management of your surveillance network across all locations.
+                </p>
+            </div>
+            <div class="flex gap-4">
+                <div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center min-w-[120px]">
+                    <span class="text-3xl font-bold text-white"><?= $totalCameras ?></span>
+                    <span class="text-xs text-slate-500 uppercase font-semibold">Total Nodes</span>
+                </div>
+                <div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center min-w-[120px] border-green-500/30">
+                    <span class="text-3xl font-bold text-green-400"><?= $activeCameras ?></span>
+                    <span class="text-xs text-green-500/70 uppercase font-semibold">Online</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- ── Camera Search & Filter ─────────────────────────── -->
-    <h2 class="section-heading">Camera List</h2>
+    <!-- ── Stats Grid ── -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass-card stat-card-glow rounded-2xl p-6 transition-all hover:translate-y-[-4px] group">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Stores</p>
+                    <h3 class="text-3xl font-bold text-white"><?= $totalStores ?></h3>
+                </div>
+                <div class="bg-blue-500/10 p-3 rounded-xl">
+                    <i data-lucide="store" class="w-6 h-6 text-blue-500"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-slate-500">
+                <i data-lucide="info" class="w-3 h-3 mr-1 text-blue-500"></i>
+                Registered locations
+            </div>
+        </div>
 
-    <?= $this->Form->create(null, [
-        'type' => 'get',
-        'url'  => ['controller' => 'Dashboard', 'action' => 'index'],
-        'class' => 'filter-bar',
-    ]) ?>
-        <div class="filter-group">
-            <label for="q">Search</label>
-            <?= $this->Form->control('q', [
-                'label'       => false,
-                'type'        => 'text',
-                'value'       => $searchQuery,
-                'placeholder' => 'Name, IP address, location…',
-                'id'          => 'q',
-            ]) ?>
+        <div class="glass-card stat-card-glow rounded-2xl p-6 transition-all hover:translate-y-[-4px] group">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Cameras</p>
+                    <h3 class="text-3xl font-bold text-white"><?= $totalCameras ?></h3>
+                </div>
+                <div class="bg-indigo-500/10 p-3 rounded-xl">
+                    <i data-lucide="camera" class="w-6 h-6 text-indigo-500"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-slate-500">
+                <i data-lucide="info" class="w-3 h-3 mr-1 text-indigo-500"></i>
+                Total assets
+            </div>
         </div>
-        <div class="filter-group">
-            <label for="status">Status</label>
-            <?= $this->Form->control('status', [
-                'label'   => false,
-                'type'    => 'select',
-                'options' => ['all' => 'All statuses', 'active' => 'Active', 'inactive' => 'Inactive'],
-                'value'   => $statusFilter,
-                'id'      => 'status',
-            ]) ?>
-        </div>
-        <?php if (!empty($storeList)): ?>
-        <div class="filter-group">
-            <label for="store_id">Store</label>
-            <?= $this->Form->control('store_id', [
-                'label'   => false,
-                'type'    => 'select',
-                'options' => ['' => 'All stores'] + $storeList,
-                'value'   => $storeFilter,
-                'id'      => 'store_id',
-            ]) ?>
-        </div>
-        <?php endif ?>
-        <div class="filter-actions">
-            <?= $this->Form->button('🔍 Search', ['class' => 'button', 'type' => 'submit']) ?>
-            <?= $this->Html->link('✕ Clear', ['controller' => 'Dashboard', 'action' => 'index'], ['class' => 'button button-outline']) ?>
-        </div>
-    <?= $this->Form->end() ?>
 
-    <?php if (empty($camerasArray)): ?>
-        <div class="empty-state">
-            <p>No cameras match your search criteria.</p>
+        <div class="glass-card stat-card-glow rounded-2xl p-6 transition-all hover:translate-y-[-4px] group border-green-500/20">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Active</p>
+                    <h3 class="text-3xl font-bold text-green-400"><?= $activeCameras ?></h3>
+                </div>
+                <div class="bg-green-500/10 p-3 rounded-xl">
+                    <i data-lucide="activity" class="w-6 h-6 text-green-500"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-green-500/50">
+                <i data-lucide="check-circle" class="w-3 h-3 mr-1"></i>
+                Normal operation
+            </div>
         </div>
-    <?php else: ?>
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>IP Address</th>
-                    <th>Location</th>
-                    <th>Store</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($camerasArray as $camera): ?>
-                <tr>
-                    <td><?= $camera->id ?></td>
-                    <td><?= h($camera->name) ?></td>
-                    <td><code><?= h($camera->ip_address) ?></code></td>
-                    <td><?= h($camera->location ?? '—') ?></td>
-                    <td><?= h($camera->store->name ?? '—') ?></td>
-                    <td>
-                        <?php if ($camera->status): ?>
-                            <span class="badge badge-active">Active</span>
-                        <?php else: ?>
-                            <span class="badge badge-inactive">Inactive</span>
-                        <?php endif ?>
-                    </td>
-                    <td>
-                        <?= $this->Html->link('View', ['controller' => 'Cameras', 'action' => 'view', $camera->id]) ?>
-                        <?= $this->Html->link('Edit', ['controller' => 'Cameras', 'action' => 'edit', $camera->id]) ?>
-                    </td>
-                </tr>
-                <?php endforeach ?>
-            </tbody>
-        </table>
+
+        <div class="glass-card stat-card-glow rounded-2xl p-6 transition-all hover:translate-y-[-4px] group border-red-500/20">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Inactive</p>
+                    <h3 class="text-3xl font-bold text-red-400"><?= $inactiveCameras ?></h3>
+                </div>
+                <div class="bg-red-500/10 p-3 rounded-xl">
+                    <i data-lucide="alert-triangle" class="w-6 h-6 text-red-500"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-red-500/50">
+                <i data-lucide="x-circle" class="w-3 h-3 mr-1"></i>
+                Attention required
+            </div>
+        </div>
     </div>
-    <?php endif ?>
 
-    <!-- ── Stores Overview ────────────────────────────────── -->
-    <h2 class="section-heading">Stores Overview</h2>
-
-    <?php if (empty($storesArray)): ?>
-        <div class="empty-state">
-            <p>No stores have been added yet. <a href="#">Add the first store</a> to get started.</p>
+    <!-- ── Camera Search & Filters ── -->
+    <div class="glass-card rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-6">
+            <i data-lucide="list" class="w-6 h-6 text-blue-500"></i>
+            <h2 class="text-xl font-bold text-white">Device Directory</h2>
         </div>
-    <?php else: ?>
-    <div class="store-grid">
-        <?php foreach ($storesArray as $store): ?>
-        <div class="store-card">
-            <h4>🏪 <?= h($store->name) ?></h4>
-            <?php if ($store->address): ?>
-                <p class="store-address">📍 <?= h($store->address) ?></p>
+
+        <?= $this->Form->create(null, [
+            'type' => 'get',
+            'url'  => ['controller' => 'Dashboard', 'action' => 'index'],
+            'class' => 'grid grid-cols-1 md:grid-cols-4 items-end gap-4',
+        ]) ?>
+            <div class="md:col-span-2">
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wide">Search Devices</label>
+                <?= $this->Form->control('q', [
+                    'label'       => false,
+                    'type'        => 'text',
+                    'value'       => $searchQuery,
+                    'placeholder' => 'Name, IP, location...',
+                    'class'       => 'w-full px-4 py-2 rounded-lg bg-slate-900/50 border border-slate-700 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all',
+                ]) ?>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wide">Status</label>
+                <?= $this->Form->control('status', [
+                    'label'   => false,
+                    'type'    => 'select',
+                    'options' => ['all' => 'All Statuses', 'active' => 'Active', 'inactive' => 'Inactive'],
+                    'value'   => $statusFilter,
+                    'class'   => 'w-full px-4 py-2 rounded-lg bg-slate-900/50 border border-slate-700 text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all',
+                ]) ?>
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="search" class="w-4 h-4"></i> Filter
+                </button>
+                <?= $this->Html->link('<i data-lucide="rotate-ccw" class="w-4 h-4"></i>', ['action' => 'index'], ['escape' => false, 'class' => 'bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center']) ?>
+            </div>
+        <?= $this->Form->end() ?>
+
+        <div class="mt-8 overflow-hidden rounded-xl border border-slate-700/50">
+            <?php if (empty($camerasArray)): ?>
+                <div class="text-center py-12 bg-slate-800/20">
+                    <i data-lucide="search-x" class="w-12 h-12 text-slate-600 mx-auto mb-4"></i>
+                    <p class="text-slate-500">No cameras found matching your criteria.</p>
+                </div>
+            <?php else: ?>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-800/50 text-slate-400 text-xs uppercase font-bold tracking-wider">
+                                <th class="px-6 py-4">Device</th>
+                                <th class="px-6 py-4">IP Address</th>
+                                <th class="px-6 py-4">Location</th>
+                                <th class="px-6 py-4">Store</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/50">
+                            <?php foreach ($camerasArray as $camera): ?>
+                            <tr class="hover:bg-blue-500/5 transition-colors group">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-slate-700/50 rounded-lg group-hover:bg-blue-500/20 transition-colors">
+                                            <i data-lucide="camera" class="w-4 h-4 text-slate-400 group-hover:text-blue-400"></i>
+                                        </div>
+                                        <span class="font-medium text-white"><?= h($camera->name) ?></span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <code class="text-blue-400/80 font-mono text-xs"><?= h($camera->ip_address) ?></code>
+                                </td>
+                                <td class="px-6 py-4 text-slate-400 text-sm">
+                                    <?= h($camera->location ?? 'Unspecified') ?>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-slate-300 text-sm"><?= h($camera->store->name ?? '—') ?></span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <?php if ($camera->status): ?>
+                                        <span class="badge-vibrant-active px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Online
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge-vibrant-inactive px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Offline
+                                        </span>
+                                    <?php endif ?>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <?= $this->Html->link('<i data-lucide="eye" class="w-4 h-4"></i>', ['controller' => 'Cameras', 'action' => 'view', $camera->id], ['escape' => false, 'title' => 'View', 'class' => 'p-2 text-slate-500 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all']) ?>
+                                        <?= $this->Html->link('<i data-lucide="edit-3" class="w-4 h-4"></i>', ['controller' => 'Cameras', 'action' => 'edit', $camera->id], ['escape' => false, 'title' => 'Edit', 'class' => 'p-2 text-slate-500 hover:text-indigo-400 hover:bg-indigo-400/10 rounded-lg transition-all']) ?>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
+                </div>
             <?php endif ?>
-            <span class="camera-chip">📷 <?= count($store->cameras) ?> camera<?= count($store->cameras) !== 1 ? 's' : '' ?></span>
-            <?php if (!empty($store->cameras)): ?>
-            <ul class="camera-list-mini">
-                <?php foreach (array_slice($store->cameras, 0, 5) as $cam): ?>
-                <li>
-                    <span><?= h($cam->name) ?></span>
-                    <?php if ($cam->status): ?>
-                        <span class="badge badge-active">Active</span>
-                    <?php else: ?>
-                        <span class="badge badge-inactive">Inactive</span>
+        </div>
+    </div>
+
+    <!-- ── Stores Grid ── -->
+    <div>
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-3">
+                <i data-lucide="layout-grid" class="w-6 h-6 text-purple-500"></i>
+                <h2 class="text-2xl font-bold text-white">Store Infrastructure</h2>
+            </div>
+            <span class="text-slate-500 text-sm font-medium"><?= count($storesArray) ?> Locations</span>
+        </div>
+
+        <?php if (empty($storesArray)): ?>
+            <div class="glass-card rounded-2xl p-12 text-center">
+                <p class="text-slate-500">No stores available yet.</p>
+            </div>
+        <?php else: ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php foreach ($storesArray as $store): ?>
+                <div class="glass-card rounded-2xl p-6 border-l-4 border-purple-500/30 hover:border-purple-500 transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="p-3 bg-purple-500/10 rounded-xl">
+                            <i data-lucide="store" class="w-6 h-6 text-purple-500"></i>
+                        </div>
+                        <div class="text-right text-[10px] font-black text-slate-600 group-hover:text-purple-500/50 uppercase transition-colors">
+                            ID #<?= $store->id ?>
+                        </div>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-2"><?= h($store->name) ?></h4>
+                    <?php if ($store->address): ?>
+                        <p class="text-slate-400 text-sm flex items-start gap-2 mb-6 min-h-[40px]">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-slate-600 flex-shrink-0 mt-0.5"></i>
+                            <?= h($store->address) ?>
+                        </p>
                     <?php endif ?>
-                </li>
+
+                    <div class="pt-6 border-t border-slate-800 flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                             <div class="flex -space-x-2">
+                                <?php foreach (array_slice($store->cameras, 0, 3) as $cam): ?>
+                                    <div class="w-8 h-8 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center text-[10px] font-bold <?= $cam->status ? 'text-green-400' : 'text-slate-600' ?>">
+                                        <i data-lucide="camera" class="w-3 h-3"></i>
+                                    </div>
+                                <?php endforeach ?>
+                             </div>
+                             <?php if (count($store->cameras) > 3): ?>
+                                <span class="text-xs text-slate-500">+<?= count($store->cameras) - 3 ?></span>
+                             <?php endif ?>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-blue-400 bg-blue-400/5 px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
+                            <i data-lucide="shield" class="w-3 h-3"></i>
+                            <?= count($store->cameras) ?> Nodes
+                        </div>
+                    </div>
+                </div>
                 <?php endforeach ?>
-                <?php if (count($store->cameras) > 5): ?>
-                <li style="color:#999;font-style:italic;">…and <?= count($store->cameras) - 5 ?> more</li>
-                <?php endif ?>
-            </ul>
-            <?php endif ?>
+            </div>
+        <?php endif ?>
+    </div>
+
+    <!-- ── Map Visualization ── -->
+    <div class="glass-card rounded-3xl p-2 overflow-hidden">
+        <div id="dashboard-map"></div>
+    </div>
+
+    <!-- ── Technical Overview ── -->
+    <div class="relative rounded-3xl overflow-hidden p-8 border border-white/5">
+        <div class="absolute inset-0 bg-slate-800/30 z-0"></div>
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h3 class="text-3xl font-bold text-white mb-6">Network Intelligence</h3>
+                <p class="text-slate-400 leading-relaxed mb-6">
+                    Our centralised surveillance hub integrates disparate IP camera networks into a unified management plane. Monitor status, geographical distribution, and technical telemetry in real-time.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 text-slate-300">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                            <i data-lucide="globe" class="w-5 h-5 text-blue-500"></i>
+                        </div>
+                        <div>
+                            <span class="block font-bold">Geospatial Awareness</span>
+                            <span class="text-xs text-slate-500">Leaflet.js powered location mapping</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 text-slate-300">
+                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
+                            <i data-lucide="zap" class="w-5 h-5 text-purple-500"></i>
+                        </div>
+                        <div>
+                            <span class="block font-bold">Reactive Monitoring</span>
+                            <span class="text-xs text-slate-500">Instant offline/online state detection</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-black/20 rounded-2xl p-6 border border-white/5 font-mono text-xs text-blue-400 space-y-2">
+                <div class="flex gap-4">
+                    <span class="text-slate-600">Framework</span>
+                    <span>CakePHP 5.x</span>
+                </div>
+                <div class="flex gap-4">
+                    <span class="text-slate-600">Environment</span>
+                    <span>PHP 8.3 &bull; MySQL 8</span>
+                </div>
+                <div class="flex gap-4">
+                    <span class="text-slate-600">Visualization</span>
+                    <span>Tailwind CSS &bull; Leaflet</span>
+                </div>
+                <div class="pt-4 mt-4 border-t border-white/5 text-slate-500 text-center">
+                    SurveillanceHub v2.0 Ready
+                </div>
+            </div>
         </div>
-        <?php endforeach ?>
     </div>
-    <?php endif ?>
-
-    <!-- ── Map ────────────────────────────────────────────── -->
-    <h2 class="section-heading">Store Map</h2>
-    <div id="dashboard-map"></div>
-
-    <!-- ── About ──────────────────────────────────────────── -->
-    <h2 class="section-heading">About</h2>
-    <div class="about-card">
-        <h3>📡 Surveillance Management System</h3>
-        <p>
-            This platform provides centralised management of surveillance cameras across multiple store locations.
-            Administrators can register stores, assign cameras to each location, monitor their real-time status,
-            and view all assets on an interactive map.
-        </p>
-        <ul>
-            <li><strong>Stores</strong> — physical locations each with a geo-coordinate for map plotting</li>
-            <li><strong>Cameras</strong> — IP cameras tracked by name, IP address, location and active/inactive status</li>
-            <li><strong>Dashboard</strong> — instant health overview with search, filter and map visualisation</li>
-        </ul>
-        <p>
-            Built with <strong>CakePHP 5</strong> · <strong>PHP 8.3</strong> · <strong>MySQL 8</strong> ·
-            <strong>Leaflet.js</strong> maps · Deployed via <strong>Docker</strong>.
-        </p>
-    </div>
-
 </div>
 
-<!-- ── Leaflet.js ────────────────────────────────────────── -->
+<!-- ── Leaflet Scripts ── -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (function () {
-    var map = L.map('dashboard-map').setView([13.7563, 100.5018], 5);
+    // Modern Dark Map Theme
+    var map = L.map('dashboard-map', { zoomControl: false }).setView([13.7563, 100.5018], 5);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
     }).addTo(map);
 
     var storeData = <?= json_encode(
@@ -381,21 +426,64 @@ tbody tr:hover { background: #eef2ff; }
     ) ?>;
 
     var bounds = [];
+    var customIcon = L.divIcon({
+        className: 'custom-div-icon',
+        html: "<div style='background-color:#3b82f6; width:12px; height:12px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px #3b82f6;'></div>",
+        iconSize: [12, 12],
+        iconAnchor: [6, 6]
+    });
 
     storeData.forEach(function (s) {
         if (s.lat === null || s.lng === null) { return; }
 
-        var popup = '<strong>\uD83C\uDFEA ' + s.name + '</strong>';
-        if (s.address) { popup += '<br><small>\uD83D\uDCCD ' + s.address + '</small>'; }
-        popup += '<br>\uD83D\uDCF7 ' + s.cameras + ' camera' + (s.cameras !== 1 ? 's' : '');
-        popup += ' &middot; \u2705 ' + s.active + ' active';
+        var popupContent = `
+            <div class="p-2 font-sans bg-slate-900 text-white rounded-lg">
+                <div class="font-bold flex items-center gap-2 mb-1">
+                    <i data-lucide="store" class="w-4 h-4 text-blue-500"></i> ${s.name}
+                </div>
+                <div class="text-[10px] text-slate-400 mb-2">${s.address}</div>
+                <div class="flex justify-between text-xs border-t border-slate-800 pt-2">
+                    <span class="flex items-center gap-1"><i data-lucide="camera" class="w-3 h-3"></i> ${s.cameras}</span>
+                    <span class="flex items-center gap-1 text-green-400"><i data-lucide="activity" class="w-3 h-3"></i> ${s.active}</span>
+                </div>
+            </div>
+        `;
 
-        L.marker([s.lat, s.lng]).addTo(map).bindPopup(popup);
+        L.marker([s.lat, s.lng], { icon: customIcon }).addTo(map).bindPopup(popupContent, {
+            className: 'modern-popup',
+            maxWidth: 250
+        });
         bounds.push([s.lat, s.lng]);
     });
 
     if (bounds.length > 0) {
-        map.fitBounds(bounds, { padding: [40, 40] });
+        map.fitBounds(bounds, { padding: [80, 80] });
     }
+
+    // Refresh lucide icons in popups when opened
+    map.on('popupopen', function() {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    });
 }());
 </script>
+
+<style>
+/* Leaflet Popup Styling */
+.modern-popup .leaflet-popup-content-wrapper {
+    background: #0f172a !important;
+    color: white !important;
+    border-radius: 12px !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+.modern-popup .leaflet-popup-content {
+    margin: 0 !important;
+    line-height: 1.4 !important;
+}
+.modern-popup .leaflet-popup-tip {
+    background: #0f172a !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+}
+</style>

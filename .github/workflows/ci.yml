@@ -50,6 +50,18 @@ jobs:
           push: true
           tags: zzzueszz/myapp:latest
 
+      - name: Deploy to VPS
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/app
+            ./deploy.sh
+            echo "Deploy done!"
+
 
           # Add other Cline CLI arguments as needed for your automation task
           # For example:
