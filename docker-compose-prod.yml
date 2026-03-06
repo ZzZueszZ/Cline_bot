@@ -1,0 +1,52 @@
+services:
+  app:
+    image: zzzueszz/myapp:latest
+    ports:
+      - "80:80"
+    environment:
+      - APP_NAME=myapp
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DATABASE_URL=mysql://cakephp:strongpassword@db/cakephp
+      - SECURITY_SALT=8379c9c464b007d06f1614228b6319527a7e4ec68b8163fcf7cbad6e37640f54
+      - SESSION_DEFAULTS=php
+      - HTTPS=false
+    command: >
+      bash -c "mkdir -p /var/www/html/tmp/cache/models
+      /var/www/html/tmp/cache/persistent
+      /var/www/html/tmp/cache/views
+      /var/www/html/tmp/sessions
+      /var/www/html/tmp/tests
+      /var/www/html/logs
+      && chmod -R 777 /var/www/html/tmp /var/www/html/logs
+      && bin/cake migrations migrate
+      && apache2-foreground"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cakephp
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: strongrootpassword
+      MYSQL_DATABASE: cakephp
+      MYSQL_USER: cakephp
+      MYSQL_PASSWORD: strongpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pstrongrootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - cakephp
+
+networks:
+  cakephp:
+    driver: bridge
+
+volumes:
+  db_data:
