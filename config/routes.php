@@ -71,6 +71,11 @@ return function (RouteBuilder $routes): void {
         );
 
         /*
+         * Chat route.
+         */
+        $builder->connect('/chat', ['controller' => 'Chat', 'action' => 'index']);
+
+        /*
          * ...and connect the rest of 'Pages' controller's URLs.
          */
         $builder->connect('/pages/*', 'Pages::display');
