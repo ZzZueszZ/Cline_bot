@@ -19,7 +19,9 @@ class CamerasController extends AppController
      */
     public function index(): void
     {
-        $cameras = $this->Cameras->find()->all();
+        $cameras = $this->Cameras->find()
+            ->contain(['Stores', 'Categories'])
+            ->all();
         $this->set(compact('cameras'));
     }
 
@@ -57,7 +59,9 @@ class CamerasController extends AppController
             $this->Flash->error(__('The camera could not be saved. Please, try again.'));
         }
 
-        $this->set(compact('camera'));
+        $categories = $this->Cameras->Categories->find('list', ['limit' => 200]);
+        $stores = $this->Cameras->Stores->find('list', ['limit' => 200]);
+        $this->set(compact('camera', 'categories', 'stores'));
 
         return null;
     }
@@ -85,7 +89,9 @@ class CamerasController extends AppController
             $this->Flash->error(__('The camera could not be saved. Please, try again.'));
         }
 
-        $this->set(compact('camera'));
+        $categories = $this->Cameras->Categories->find('list', ['limit' => 200]);
+        $stores = $this->Cameras->Stores->find('list', ['limit' => 200]);
+        $this->set(compact('camera', 'categories', 'stores'));
 
         return null;
     }

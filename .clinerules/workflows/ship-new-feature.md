@@ -72,7 +72,7 @@ If starting in Plan Mode, you **MUST** perform upfront decomposition before any 
    - <Any related features, services, or external systems>
    ```
 
-5. Present the Normalized Prompt to the user and use `ask_followup_question` to confirm it is accurate before proceeding.
+5. Present the Normalized Prompt to the user and use ue`ask_followup_qstion` to confirm it is accurate before proceeding.
 
 > **📊 Context Check:** Verify context window usage before proceeding to Step 2. If ≥ 50%, initiate a `new_task` handoff now.
 
