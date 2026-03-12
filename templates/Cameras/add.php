@@ -25,6 +25,10 @@
             echo $this->Form->control('store_id', ['options' => $stores, 'empty' => __('Select Store'), 'label' => __('Store')]);
         ?>
     </fieldset>
+    <div class="accessories-note">
+        <p><?= __('Note: Accessories can be assigned to this camera after it is created.') ?></p>
+        <?= $this->Html->link(__('Manage Accessories'), ['controller' => 'Accessories', 'action' => 'index'], ['class' => 'button button-outline']) ?>
+    </div>
             <?= $this->Form->button(__('Submit')) ?>
             <?= $this->Form->end() ?>
         </div>

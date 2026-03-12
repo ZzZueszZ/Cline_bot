@@ -19,6 +19,7 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\DateTime $modified
  * @property \App\Model\Entity\Category|null $category
  * @property \App\Model\Entity\Store|null $store
+ * @property \App\Model\Entity\Accessory[] $accessories
  */
 class Camera extends Entity
 {
@@ -34,5 +35,6 @@ class Camera extends Entity
         'status' => true,
         'created' => true,
         'modified' => true,
+        'accessories' => true,
     ];
 }
