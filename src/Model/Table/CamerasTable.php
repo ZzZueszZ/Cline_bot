@@ -45,6 +45,12 @@ class CamerasTable extends Table
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
         ]);
+
+        $this->hasMany('Accessories', [
+            'foreignKey' => 'assigned_camera_id',
+            'dependent' => true,
+            'cascadeCallbacks' => true,
+        ]);
     }
 
     /**

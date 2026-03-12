@@ -1,9 +1,9 @@
 ---
-description: "End-to-end workflow for shipping a new feature: from raw task description to a pull request. Includes context window monitoring and task handoff to ensure seamless multi-session delivery."
+description: "End-to-end workflow for shipping a new feature: from raw task description to a pull request. Includes context window monitoring, authentication bypass strategy, and comprehensive testing with task handoff to ensure seamless multi-session delivery."
 author: "Cline Team"
-version: "2.0"
+version: "2.1"
 category: "Development"
-tags: ["feature", "pr", "planning", "implementation", "workflow", "context-management", "new-task"]
+tags: ["feature", "pr", "planning", "implementation", "workflow", "context-management", "new-task", "authentication-bypass", "testing"]
 globs: ["*.*"]
 ---
 
@@ -29,8 +29,11 @@ If starting in Plan Mode, you **MUST** perform upfront decomposition before any 
    graph TD
        A[Ship New Feature] --> B[Step 1: Gather & Normalize]
        B --> C[Step 2: Implementation Plan]
-       C --> D[Step 3: Implement Code]
-       D --> E[Step 4: Create Pull Request]
+       C --> D[Step 3: Implementation & HITL Loop]
+       D --> E{User Satisfied?}
+       E -->|No| D
+       E -->|Yes| F[Step 4: Autonomous Browser Verification]
+       F --> G[Step 5: Create Pull Request]
    ```
 
 5. Use `ask_followup_question` to confirm the plan and which subtask to begin with.
@@ -104,7 +107,22 @@ If starting in Plan Mode, you **MUST** perform upfront decomposition before any 
    5. <Step 5: e.g., Update documentation or configuration>
 
    ### Testing Strategy
-   - <How to verify each step is correct>
+   - **Test Scenarios**: Define specific test cases for each acceptance criterion
+   - **Test Cases**: Create detailed test cases with preconditions, steps, and expected results
+   - **Test Environment**: Specify environment setup requirements for testing
+   - **Test Data**: Define required test data and fixtures
+   - **How to verify each step is correct**: Include validation checkpoints after each implementation step
+
+   ### Authentication Bypass Strategy
+   - **Bypass Method**: Define how authentication will be temporarily disabled for testing
+   - **Scope**: Specify which authentication mechanisms will be bypassed
+   - **Security Considerations**: Ensure bypass is only active in development/testing environments
+   - **Rollback Plan**: Document how to restore proper authentication after testing
+
+   ### Database Migration Strategy
+   - **Migration Commands**: Specify the exact commands needed to migrate the database
+   - **Test Data Setup**: Define any seed data or fixtures required for testing
+   - **Rollback Plan**: Document how to revert database changes if needed
 
    ### Risks & Mitigations
    - <Risk>: <Mitigation approach>
@@ -116,53 +134,143 @@ If starting in Plan Mode, you **MUST** perform upfront decomposition before any 
 
 ---
 
-## Step 3: Implement Code Changes
+## Step 3: Implementation & Human-in-the-Loop Loop
 
-Execute the implementation plan **one atomic step at a time**, checking context window usage before each step.
+### Objective
+Implement the task and iterate through revisions until the User is fully satisfied.
 
-### For each implementation step:
+### 3.1 Implement
+Execute code writing or modifications strictly based on the Implementation Plan.
 
-1. **Check context window usage first.** If ≥ 50%, stop and initiate handoff before starting this step.
+### 3.2 Review Request
+Upon completing a logical unit or the entire task, use `ask_followup_question` to present:
 
-2. Use `read_file` to examine the target file before editing.
+- A summary of modified/created files.
+- The core logic implemented.
+- A specific inquiry: "Are you satisfied with this implementation? Is there anything that needs adjustment?"
 
-3. Use `write_to_file` to create new files, or `replace_in_file` for targeted edits.
+### 3.3 The HITL Loop
 
-4. Verify the change is correct before moving to the next step.
+**IF User provides feedback or requests changes:**
+- Return to step 3.1, apply the requested changes, and repeat the review process.
 
-5. Document the completed step in your running **Code Changes Summary** (maintained in memory and passed forward in any handoff).
+**BREAK LOOP:**
+- Only proceed to Step 4 if the User provides clear approval (e.g., "Approve", "OK", "Looks good", "Duyệt").
 
-### After all implementation steps are complete:
-
-1. Perform a self-review:
-   - Do the changes satisfy all acceptance criteria from the Normalized Prompt?
-   - Are edge cases handled?
-   - Is error handling in place?
-   - Does the code follow existing conventions and patterns?
-   - Are tests written and passing? (Use `execute_command` to run the test suite.)
-
-2. Share a complete summary with the user:
-
-   ```markdown
-   ## Code Changes Summary
-
-   ### Files Created
-   - `path/to/new-file.ts`
-
-   ### Files Modified
-   - `path/to/existing-file.ts` — <Summary of changes>
-
-   ### Tests
-   - <Test results or confirmation tests pass>
-   ```
-
-3. Use `ask_followup_question` to confirm the implementation is ready to proceed to PR creation.
+### 3.4 Context Window Monitoring
+- **📊 Context Check:** Verify context window usage before each iteration.
+- If usage is ≥ 50%, initiate a `new_task` handoff immediately to preserve history.
+- When initiating handoff, include:
+  - Current implementation status
+  - Pending HITL feedback
+  - Next steps to continue
 
 > **📊 Context Check:** Verify context window usage before proceeding to Step 4. If ≥ 50%, initiate a `new_task` handoff, carrying forward the full Code Changes Summary and the instruction to begin Step 4.
 
 ---
 
-## Step 4: Create Pull Request via PR Review Workflow
+## Step 4: Authentication Bypass & Comprehensive Testing
+
+### Objective
+Temporarily bypass authentication mechanisms and execute comprehensive browser-based testing according to the planned test cases.
+
+### 4.1 Authentication Bypass Setup
+1. **Identify Authentication Mechanisms**:
+   - Locate authentication middleware, guards, or interceptors in the application
+   - Identify session management, JWT tokens, or other auth patterns
+
+2. **Implement Bypass Strategy**:
+   - Create environment variable to enable/disable auth bypass (e.g., `SKIP_AUTH=true`)
+   - Modify authentication middleware to skip verification when bypass is enabled
+   - Ensure bypass only works in development/testing environments
+
+3. **Verify Bypass Implementation**:
+   - Test that authentication is properly bypassed
+   - Confirm that normal authentication still works when bypass is disabled
+   - Document the bypass mechanism for future reference
+
+### 4.2 Database Migration
+Use `execute_command` to run database migrations to ensure the test environment has the latest schema:
+```bash
+# Examples based on framework:
+php bin/cake migrations migrate    # CakePHP
+php artisan migrate               # Laravel
+python manage.py migrate          # Django
+npm run migrate                   # Custom migration script
+./gradlew flywayMigrate           # Spring Boot with Flyway
+rake db:migrate                   # Rails
+```
+
+### 4.3 Start Environment
+Use `execute_command` to start the local development server with authentication bypass:
+```bash
+# Set environment variable for auth bypass
+export SKIP_AUTH=true
+
+# Examples based on framework:
+npm run dev                    # React/Vue/Next.js
+php artisan serve             # Laravel
+python manage.py runserver    # Django
+mvn spring-boot:run           # Spring Boot
+bundle exec rails server      # Rails
+```
+
+### 4.4 Execute Planned Test Cases
+1. **Test Case Execution**:
+   - Launch browser using `browser_action` tool
+   - Navigate to the feature's URL
+   - Execute each planned test case systematically:
+     - **Test Case 1**: [Description from implementation plan]
+       - Preconditions: [Setup requirements]
+       - Steps: [Detailed actions to perform]
+       - Expected Result: [What should happen]
+     - **Test Case 2**: [Description from implementation plan]
+       - Preconditions: [Setup requirements]
+       - Steps: [Detailed actions to perform]
+       - Expected Result: [What should happen]
+     - **Continue for all planned test cases...**
+
+2. **Test Scenario Validation**:
+   - Verify each acceptance criterion through corresponding test scenarios
+   - Test edge cases and error conditions as defined in the test plan
+   - Validate user workflows and interactions
+
+### 4.5 Test Results Analysis
+1. **Monitor Test Execution**:
+   - Track success/failure of each test case
+   - Capture screenshots for visual verification
+   - Monitor browser console logs for errors or warnings
+
+2. **Handle Test Failures**:
+   - **IF FAIL**: Perform root cause analysis
+     - Review test case steps for accuracy
+     - Check application logs and error messages
+     - Identify implementation gaps or bugs
+     - Implement fixes using `replace_in_file`
+     - Re-run failed test cases
+   - **IF PASS**: Mark test case as successful and proceed to next case
+
+3. **Test Coverage Verification**:
+   - Ensure all planned test cases have been executed
+   - Verify all acceptance criteria are validated
+   - Confirm test coverage meets the defined requirements
+
+### 4.6 Authentication Restoration
+1. **Disable Bypass**:
+   - Set environment variable to disable auth bypass: `export SKIP_AUTH=false`
+   - Restart the development server if necessary
+   - Verify authentication is properly restored
+
+2. **Security Validation**:
+   - Confirm authentication mechanisms are working correctly
+   - Test that unauthorized access is properly blocked
+   - Ensure no security vulnerabilities were introduced
+
+### 4.7 Clean Up
+- Terminate the local server.
+- Close the browser sessions.
+
+### 4.8 Create Pull Request via PR Review Workflow
 
 1. Trigger the `pr-review-cline` workflow, which will produce:
    - A structured commit message following Conventional Commits format.
@@ -197,6 +305,7 @@ Execute the implementation plan **one atomic step at a time**, checking context 
      - Normalized prompt.
      - Implementation plan.
      - Code changes summary.
+     - Browser verification results.
      - Commit message and PR description.
 
 ---
