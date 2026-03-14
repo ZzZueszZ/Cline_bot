@@ -77,8 +77,6 @@ If starting in Plan Mode, you **MUST** perform upfront decomposition before any 
 
 5. Present the Normalized Prompt to the user and use ue`ask_followup_qstion` to confirm it is accurate before proceeding.
 
-> **📊 Context Check:** Verify context window usage before proceeding to Step 2. If ≥ 50%, initiate a `new_task` handoff now.
-
 ---
 
 ## Step 2: Create Detailed Implementation Plan
@@ -130,8 +128,6 @@ If starting in Plan Mode, you **MUST** perform upfront decomposition before any 
 
 3. Present the Detailed Implementation Plan to the user and use `ask_followup_question` to confirm or adjust before proceeding.
 
-> **📊 Context Check:** Verify context window usage before proceeding to Step 3. If ≥ 50%, initiate a `new_task` handoff now, carrying forward the Normalized Prompt and Implementation Plan.
-
 ---
 
 ## Step 3: Implementation & Human-in-the-Loop Loop
@@ -156,18 +152,6 @@ Upon completing a logical unit or the entire task, use `ask_followup_question` t
 
 **BREAK LOOP:**
 - Only proceed to Step 4 if the User provides clear approval (e.g., "Approve", "OK", "Looks good", "Duyệt").
-
-### 3.4 Context Window Monitoring
-- **📊 Context Check:** Verify context window usage before each iteration.
-- If usage is ≥ 50%, initiate a `new_task` handoff immediately to preserve history.
-- When initiating handoff, include:
-  - Current implementation status
-  - Pending HITL feedback
-  - Next steps to continue
-
-> **📊 Context Check:** Verify context window usage before proceeding to Step 4. If ≥ 50%, initiate a `new_task` handoff, carrying forward the full Code Changes Summary and the instruction to begin Step 4.
-
----
 
 ## Step 4: Authentication Bypass & Comprehensive Testing
 
